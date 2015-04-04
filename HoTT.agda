@@ -2,7 +2,7 @@
 
 open import Relation.Binary.PropositionalEquality
 
-module Inverses where
+module HoTT where
 
 Type : Set₁
 Type = Set

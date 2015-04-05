@@ -1,15 +1,10 @@
 {-# OPTIONS --without-K #-}
 
 open import Relation.Binary.PropositionalEquality
+open import HoTT
+open import BasicTypes
 
-module agda where
-
-Type : Set₁
-Type = Set
-
-data ℕ : Type where
-  zero : ℕ
-  suc : ℕ → ℕ
+module Playground where
 
 data List (A : Type) : Type where
  []   : List A
@@ -31,3 +26,7 @@ List=Nat₂ : {A : Type} →  ℕ → List A
 List=Nat₂ zero = []
 List=Nat₂ (suc n) = (List=Nat₂ n) ++ []
 
+-- List and Nat are isomorphic
+
+p : List=Nat₁ inverseOf List=Nat₂
+p = ?

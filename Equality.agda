@@ -21,3 +21,13 @@ ap : ∀ {m n} {A : Type m} {B : Type n} (f : (A → B)) {a a' : A} →
    a == a' → (f a) == (f a')
 ap f = pathInd (λ {x y} _ → (f x) == (f y)) (λ x →
        refl (f x))
+
+
+{-_◾_ : ∀ {ℓ} {A : Type ℓ} {x y z : A}
+        → (x == y) → (y == z) → (x == z) 
+p ◾ q  = pathInd (λ x y z _ → (y == z) → (x == z))
+                 (λ x → pathInd (λ x _ → (x == z) → (x == z))
+                           (λ x → refl x))
+-}
+sym : ∀ {ℓ} {A : Type ℓ} {x y : A} → (x == y) → (y == x)
+sym = pathInd (λ {x y} _ → y == x) (λ x → refl x)

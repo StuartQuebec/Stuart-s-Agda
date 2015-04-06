@@ -99,3 +99,7 @@ suc m + n = suc (m + n)
 _*_ : ℕ → ℕ → ℕ
 zero * n = zero
 suc m * n = m + (m * n)
+
+_$_ : ∀ {a b} {A : Set a} {B : A → Set b} →
+      ((x : A) → B x) → (x : A) → B x
+f $ x = f x

@@ -32,7 +32,7 @@ indisc P = pathInd (λ {u v} _ → P u → P v) (λ x p → p)
 
 -- Lemma 2.2.1. Functions behave functorially on paths:
 -- Given a function f : A → B and objects a, b there is
--- ap ('application' or 'acting functorial[on paths]'
+-- ap ('application' or 'acting functorial[on paths]')
 
 ap : {A B : Type} (f : (A → B)) {a a' : A} → 
    Id a a' → Id (f a) (f a')
@@ -44,4 +44,8 @@ ap f = pathInd (λ {x y} _ → Id (f x) (f y)) (λ x →
 -- f : (Id x y) → (Id y z) → (Id x z) sending (refl x) to itself
 
 --trans : {A : Type} {x y z : A} → Id x y → Id y z → Id x z 
---trans p = pathInd (λ {x y} _ → {z}
+--trans = pathInd (λ {x y z} _ → {z}) (λ x → D x z)
+
+D : (A : Type) → (x y : A) → Id x y → (z : A) → Id y z → Id x z
+D A x y _ = pathInd (λ A x y _ (z : A) → Id y z → Id x z)
+          (λ x → (z : A) → id (Id x z))

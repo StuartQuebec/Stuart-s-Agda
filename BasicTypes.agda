@@ -49,8 +49,8 @@ data Bool : Type₀ where
 const : ∀ {m n} {A : Type m} {B : Type n} → B → (A → B)
 const x = λ _ → x
 
-id : ∀ {ℓ} (A : Type ℓ) → A → A
-id A = (λ x → x)
+id : ∀ {ℓ} {A : Type ℓ} → A → A
+id {A} = (λ x → x)
 
 ----------------------------------
 -----(Dependent) Pair Types---------
@@ -91,8 +91,8 @@ pred (suc n) = just n
 -- Addition
 
 _+_ : ℕ → ℕ → ℕ
-zero + n = n
-suc m + n = suc (m + n)
+zero + n = n                               
+suc m + n = suc (m + n)                   
 
 -- Multiplication
 

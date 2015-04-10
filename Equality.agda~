@@ -6,28 +6,28 @@ module Equality where
 
 infix 4 _==_
 
-data _==_ {ℓ} {A : Type ℓ} : A → A → Type ℓ where
- refl : (a : A) → a == a
+data _==_ {ℓ} {A : Type ℓ} (a : A) : A → Type ℓ where
+ refl : a == a
 
-pathInd : ∀ {m n} {A : Type m} (P : {x y : A} → (x == y) → Type n) →
-        (∀ x → P (refl x)) → ∀ {x y} (p : (x == y)) → P p
-pathInd P r (refl x) = r _
+pathInd : ∀ {m n} → {A : Set m} → 
+          (C : {x y : A} → x == y → Set n) →
+          (c : (x : A) → C {x} refl) →
+          {x y : A} (p : x == y) → C {x} p
+pathInd C c {x} refl = c x
 
-indisc : ∀ {m n} {A : Type m} (P : A → Type n) {x y : A} →
-       (x == y) → P x → P y
-indisc P = pathInd (λ {u v} _ → P u → P v) (λ x p → p)
+-- todo : Proof that idEq is actually the identity
+idEq : {A : Set} {x y : A} → x == y → x == y
+idEq {A} = pathInd (λ {x y : A} p → x == y) (λ x → refl)
 
-ap : ∀ {m n} {A : Type m} {B : Type n} (f : (A → B)) {a a' : A} → 
-   a == a' → (f a) == (f a')
-ap f = pathInd (λ {x y} _ → (f x) == (f y)) (λ x →
-       refl (f x))
+foo : ∀ {m} (A : Type m) {x y : A} → (x == y) → ℕ
+foo A p = zero
+--foo A = pathInd (λ {x y : A} p → ℕ) (λ x → zero)
 
+sym : ∀ {m} (A : Type m) {x y : A} → x == y → y == x
+sym A = pathInd (λ {x y : A} _ → y == x) (λ x → refl)
 
-{-_◾_ : ∀ {ℓ} {A : Type ℓ} {x y z : A}
-        → (x == y) → (y == z) → (x == z) 
-p ◾ q  = pathInd (λ x y z _ → (y == z) → (x == z))
-                 (λ x → pathInd (λ x _ → (x == z) → (x == z))
-                           (λ x → refl x))
--}
-sym : ∀ {ℓ} {A : Type ℓ} {x y : A} → (x == y) → (y == x)
-sym = pathInd (λ {x y} _ → y == x) (λ x → refl x)
+trans : ∀ {m} (A : Type m) {x y : A} → x == y → (z : A) → y == z → x == z
+trans A = pathInd (λ {x y : A} _ → (z : A) → y == z → x == z) (λ x → (λ z p → p))
+
+--_◾_ : ∀ {m} (A : Type m) {x y z : A} → x == y → y == z → x == z
+--◾_ = {!trans A!}

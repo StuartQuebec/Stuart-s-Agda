@@ -19,9 +19,6 @@ pathInd C c {x} refl = c x
 idEq : {A : Set} {x y : A} → x == y → x == y
 idEq = pathInd (_ == _) (λ x → refl)
 
-foo : ∀ {m} (A : Type m) {x y : A} → (x == y) → ℕ
-foo A = pathInd (ℕ) (λ x → zero)
-
 sym : ∀ {m} {A : Type m} {x y : A} → x == y → y == x
 sym = pathInd (_ == _) (λ x → refl)
 
@@ -30,3 +27,6 @@ trans = pathInd (_ == _ → _ == _) (λ x → id)
 
 _◾_ : forall {m} {A : Type m} {x y z : A} → x == y → y == z → x == z
 p ◾ q = trans p q
+
+nPath : (A : Type₀) (x y : A) → (p : x == y) → (p ◾ refl) == p
+nPath A x y = pathInd (λ {x} {y} {p : x == y} → (p ◾ refl) == p) (λ a → refl)

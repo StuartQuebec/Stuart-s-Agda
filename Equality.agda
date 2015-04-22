@@ -62,4 +62,12 @@ ass : ∀ {m} {A : Type m} {w x y z : A} → (p : w == x) → (q : x == y) →
 ass {m} {A} {w} {x} {y} {z} = pathInd (λ {w} {x} {p : w == x} →
         (q : x == y) → (r : y == z) → p ◾ (q ◾ r) == (p ◾ q) ◾ r)
         (λ x' (q : x' == y) (r : y == z) 
-        → help {m} {A} {w} {x} {y} {z} q r)
+        → help {m} {A} {w} {x'} {y} {z} q r)
+
+-- transport
+
+trp : ∀ {m n} {A : Type m} {x y : A} → (P : A → Type n) → x == y →
+      P x → P y
+trp {m} {n} {A} {x} {y} P = pathInd (λ {x} {y} {p} → P x → P y)
+                                    (λ a → id)
+

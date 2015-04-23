@@ -66,8 +66,35 @@ ass {m} {A} {w} {x} {y} {z} = pathInd (λ {w} {x} {p : w == x} →
 
 -- transport
 
-trp : ∀ {m n} {A : Type m} {x y : A} → (P : A → Type n) → x == y →
+trp : ∀ {m n} {A : Type m} {x y : A} → {P : A → Type n} → x == y →
       P x → P y
-trp {m} {n} {A} {x} {y} P = pathInd (λ {x} {y} {p} → P x → P y)
+trp {m} {n} {A} {x} {y} {P} = pathInd (λ {x} {y} {p} → P x → P y)
                                     (λ a → id)
 
+-- functor propety of dependent functions
+
+apd : ∀ {m n} {A : Type m} {P : A → Type n} → (f : (x : A) → P x) →
+      {x y : A} → (p : x == y) → (trp p (f x)) == f y
+apd f = pathInd (λ {x} {y} {p} → (trp p (f x)) == f y)
+                 (λ a → refl)
+
+trpConst : ∀ {m n} {A : Type m} {B : Type n} {P : A → B}
+           {x y : A} → (p : x == y) → (b : B) → trp p b == b
+trpConst {m} {n} {A} {B} {P} {x} {y} = pathInd (λ {x} {y} {p} → 
+         (b : B) → trp p b == b) ((λ x' → {!(b : B) → refl!}))
+
+{-
+help' : ∀ {m n} {A : Type m} {x : A} → (P : A → Type n) → (u : P x) →
+      x , u == x , trp P refl u
+help' P u = refl
+
+help'' : {A : Type₀} {a : A} → (a , a) == (a , a)
+help'' = refl
+
+-- lemma 2.3.2 path lifting property of type families
+lift : ∀ {m n} {A : Type m} {P : A → Type n} {x y : A} → (p : x == y) →
+       (u : P x) → (x , u) == (y , (trp P p u))
+lift {m} {n} {A} {P} {x} {y} = pathInd (λ {x} {y} {p : x == y} → (u : P x) →
+                               (x , u) == (y , (trp P p u))) 
+                               (λ x' → {!!} )
+-}

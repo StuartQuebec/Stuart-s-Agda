@@ -82,6 +82,10 @@ data ℕ : Type₀ where
  zero : ℕ
  suc : ℕ → ℕ
 
+
+constℕ : ∀ {m} {A : Type m} → A → Type₀
+constℕ = (const ℕ)
+
 -- Predecessor
 
 pred : ℕ → Maybe ℕ

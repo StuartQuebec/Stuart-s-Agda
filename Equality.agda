@@ -20,8 +20,8 @@ idEq : {A : Set} {x y : A} → x == y → x == y
 idEq = pathInd (_ == _) (λ x → refl)
 
 ap : ∀ {m n} {A : Type m} {B : Type n} → (f : A → B) →
-     (x y : A) → (x == y) → ((f x) == (f y))
-ap f x y = pathInd (λ {x} {y} {p} → ((f x) == (f y))) (λ a → refl)
+     {x y : A} → (x == y) → ((f x) == (f y))
+ap f {x} {y} = pathInd (λ {x} {y} {p} → ((f x) == (f y))) (λ a → refl)
 
 sym : ∀ {m} {A : Type m} {x y : A} → x == y → y == x
 sym = pathInd (λ {x} {y} {p : x == y} → y == x) (λ a → refl)
@@ -54,7 +54,7 @@ help : ∀ {m} {A : Type m} {w x y z : A} → (q : x == y) →
       (r : y == z) → refl ◾ (q ◾ r) == (refl ◾ q) ◾ r
 
 help {m} {A} {w} {x} {y} {z} q r = nPathl (q ◾ r) ◾ 
-                 ap (λ (pf : x == y) → pf ◾ r) q (refl ◾ q) (nPathl q) 
+                 ap (λ (pf : x == y) → pf ◾ r) {q} {(refl ◾ q)} (nPathl q) 
 
 
 ass : ∀ {m} {A : Type m} {w x y z : A} → (p : w == x) → (q : x == y) →
@@ -66,35 +66,64 @@ ass {m} {A} {w} {x} {y} {z} = pathInd (λ {w} {x} {p : w == x} →
 
 -- transport
 
-trp : ∀ {m n} {A : Type m} {x y : A} → {P : A → Type n} → x == y →
+trp : ∀ {m n} {A : Type m} {x y : A} → (P : A → Type n) → x == y →
       P x → P y
-trp {m} {n} {A} {x} {y} {P} = pathInd (λ {x} {y} {p} → P x → P y)
+trp {m} {n} {A} {x} {y} P = pathInd (λ {x} {y} {p} → P x → P y)
                                     (λ a → id)
 
 -- functor propety of dependent functions
 
 apd : ∀ {m n} {A : Type m} {P : A → Type n} → (f : (x : A) → P x) →
-      {x y : A} → (p : x == y) → (trp p (f x)) == f y
-apd f = pathInd (λ {x} {y} {p} → (trp p (f x)) == f y)
+      {x y : A} → (p : x == y) → (trp P p (f x)) == f y
+apd {m} {n} {A} {P} f = pathInd (λ {x} {y} {p} → (trp P p (f x)) == f y)
                  (λ a → refl)
 
-trpConst : ∀ {m n} {A : Type m} {B : Type n} {P : A → B}
-           {x y : A} → (p : x == y) → (b : B) → trp p b == b
-trpConst {m} {n} {A} {B} {P} {x} {y} = pathInd (λ {x} {y} {p} → 
-         (b : B) → trp p b == b) ((λ x' → {!(b : B) → refl!}))
+trpConst : ∀ {m n} {A : Type m} {B : Type n}
+           {x y : A} → (p : x == y) → (b : B) → trp (const B) p b == b
+trpConst {m} {n} {A} {B} {x} {y} = pathInd (λ {x} {y} {p} → 
+         (b : B) → trp (const B) p b == b) (λ a _ → refl)
 
-{-
-help' : ∀ {m n} {A : Type m} {x : A} → (P : A → Type n) → (u : P x) →
-      x , u == x , trp P refl u
-help' P u = refl
+foo : {x y : ℕ} → (p : x == y) →
+      x == zero → y == zero
+foo p = trp (λ a → a == zero) p
+
+help' : ∀ {m n} {A : Type m} {x : A} {P : A → Type n} → {u : P x} →
+      u == (trp P refl u)
+help' = refl
 
 help'' : {A : Type₀} {a : A} → (a , a) == (a , a)
 help'' = refl
 
+
 -- lemma 2.3.2 path lifting property of type families
 lift : ∀ {m n} {A : Type m} {P : A → Type n} {x y : A} → (p : x == y) →
-       (u : P x) → (x , u) == (y , (trp P p u))
+       (u : P x) → (x , u) == (y , trp P p u)
 lift {m} {n} {A} {P} {x} {y} = pathInd (λ {x} {y} {p : x == y} → (u : P x) →
-                               (x , u) == (y , (trp P p u))) 
-                               (λ x' → {!!} )
--}
+                               (x , u) == (y , trp P p u)) 
+                               (λ x' _ → refl )
+
+hom : ∀ {m n} {A : Type m} {P : A → Type n} → (f g : (a : A) → P a) →
+      Type (m ⊔ n)
+hom {m} {n} {A} {P} f g = (x : A) → (f x) == (g x)
+
+_~_ : ∀ {m n} {A : Type m} {P : A → Type n} → (f g : (a : A) → P a) →
+      Type (m ⊔ n)
+f ~ g = hom f g
+
+homRefl : ∀ {m n} {A : Type m} {P : A → Type n} → (f : (a : A) → P a) →
+          f ~ f
+homRefl {m} {n} {A} f = (λ (x : A) → refl)
+
+homSym : ∀ {m n} {A : Type m} {P : A → Type n} → (f g : (a : A) → P a) →
+          f ~ g → g ~ f
+homSym {m} {n} {A} {P} f g h = λ (x : A) → sym (h x)
+
+homTrans : ∀ {m n} {A : Type m} {P : A → Type n} → (e f g : (a : A) → P a) →
+          e ~ f → f ~ g → e ~ g
+homTrans {m} {n} {A} {P} e f g h i = λ (x : A) → (h x) ◾ (i x)
+
+homNatTrafo : ∀ {m n} {A : Type m} {B : Type n} (f g : A → B) → (H : f ~ g) →
+              {x y : A} → (p : x == y) → (H x) ◾ (ap g p) == (ap f p) ◾ (H y)
+homNatTrafo f g H = pathInd (λ {x} {y} {p : x == y} 
+                            → (H x) ◾ (ap g p) == (ap f p) ◾ (H y))
+                            {!!}

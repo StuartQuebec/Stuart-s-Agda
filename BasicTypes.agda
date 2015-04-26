@@ -46,6 +46,10 @@ data Bool : Type₀ where
 ---Basic Functions----------------
 ----------------------------------
 
+_°_ : ∀ {l m n} {A : Type l} {B : Type m} {C : Type n} →
+        (g : B → C) → (f : A → B) → A → C
+g ° f = λ a → g (f a)
+
 const : ∀ {m n} {A : Type m} {B : Type n} → B → (A → B)
 const x = λ _ → x
 
@@ -69,11 +73,20 @@ proj₂ : ∀ {m} {A : Type m} {n} {B : (A → Type n)} →
 
 proj₂ (a , b) = b 
 
+
 -- Simple Pair Type
 
 _×_ : ∀ {m n} (A : Type m) (B : Type n) → Type (m ⊔ n)
 A × B = ∑ A (λ _ → B)
+{-
+proj₁ : ∀ {m} {A : Type m} {n} {B : Type n} → A × B → A
+proj₁ (a , b) = a
 
+proj₂ : ∀ {m} {A : Type m} {n} {B : Type n} →
+      (x : A × B) → B
+
+proj₂ (a , b) = b 
+-}
 ----------------------------------
 ------- Natural Numbers ----------
 ----------------------------------

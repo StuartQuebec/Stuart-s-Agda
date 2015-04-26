@@ -50,19 +50,12 @@ $2,14iii = pathInd (λ {x} {y} {p : x == y} → ! (! p) == p) (λ x → refl)
 
 -- Associativity of Equality
 
-help : ∀ {m} {A : Type m} {w x y z : A} → (q : x == y) →
-      (r : y == z) → refl ◾ (q ◾ r) == (refl ◾ q) ◾ r
-
-help {m} {A} {w} {x} {y} {z} q r = nPathl (q ◾ r) ◾ 
-                 ap (λ (pf : x == y) → pf ◾ r) {q} {(refl ◾ q)} (nPathl q) 
-
-
 ass : ∀ {m} {A : Type m} {w x y z : A} → (p : w == x) → (q : x == y) →
       (r : y == z) → p ◾ (q ◾ r) == (p ◾ q) ◾ r
 ass {m} {A} {w} {x} {y} {z} = pathInd (λ {w} {x} {p : w == x} →
         (q : x == y) → (r : y == z) → p ◾ (q ◾ r) == (p ◾ q) ◾ r)
         (λ x' (q : x' == y) (r : y == z) 
-        → help {m} {A} {w} {x'} {y} {z} q r)
+        → nPathl (q ◾ r) ◾ ap (λ (pf : x' == y) → pf ◾ r) {q} {refl ◾ q} (nPathl q))
 
 -- transport
 
@@ -82,18 +75,6 @@ trpConst : ∀ {m n} {A : Type m} {B : Type n}
            {x y : A} → (p : x == y) → (b : B) → trp (const B) p b == b
 trpConst {m} {n} {A} {B} {x} {y} = pathInd (λ {x} {y} {p} → 
          (b : B) → trp (const B) p b == b) (λ a _ → refl)
-
-foo : {x y : ℕ} → (p : x == y) →
-      x == zero → y == zero
-foo p = trp (λ a → a == zero) p
-
-help' : ∀ {m n} {A : Type m} {x : A} {P : A → Type n} → {u : P x} →
-      u == (trp P refl u)
-help' = refl
-
-help'' : {A : Type₀} {a : A} → (a , a) == (a , a)
-help'' = refl
-
 
 -- lemma 2.3.2 path lifting property of type families
 lift : ∀ {m n} {A : Type m} {P : A → Type n} {x y : A} → (p : x == y) →
@@ -126,4 +107,30 @@ homNatTrafo : ∀ {m n} {A : Type m} {B : Type n} (f g : A → B) → (H : f ~ g
               {x y : A} → (p : x == y) → (H x) ◾ (ap g p) == (ap f p) ◾ (H y)
 homNatTrafo f g H = pathInd (λ {x} {y} {p : x == y} 
                             → (H x) ◾ (ap g p) == (ap f p) ◾ (H y))
-                            {!!}
+                            (λ a → nPathr (H a) ◾ nPathl (H a))
+
+{-$2,4,4 : ∀ {m} {A : Type m} → (f : A → A) → (H : f ~ id) → {x : A} →
+         H (f x) == ap f (H x)
+$2,4,4 f H {x} = {!!}-}
+
+quinv : ∀ {m n} {A : Type m} {B : Type n} → (f : A → B) → Type (m ⊔ n)
+quinv {m} {n} {A} {B} f = (g : B → A) → (α : (f ° g) ~ id) → 
+                          (β : (g ° f) ~ id) 
+                          → (B → A) × (( (f ° g) ~ id) × ((g ° f) ~ id) )
+
+-- Identity type on pairs
+
+idTypePairs : ∀ {m n} {A : Type m} {B : Type n} {x y : A × B} →
+              (p : x == y) →
+              ((proj₁ x) == (proj₁ y)) × ((proj₂ x) == (proj₂ y))
+idTypePairs p = (ap proj₁ p) , (ap proj₂ p)
+
+help : ∀ {m n} {A : Type m} {B : Type n} {x y : A × B} →
+       ((proj₁ x) == (proj₁ y)) → ((proj₂ x) == (proj₂ y)) →  x == y
+help {m} {n} {A} {B} = pathInd (λ {x} {y} {p} →
+                       ((proj₂ x) == (proj₂ y)) →  x == y) ? 
+
+idTypePairs⁻¹ : ∀ {m n} {A : Type m} {B : Type n} {x y : A × B} →
+                ((proj₁ x) == (proj₁ y)) × ((proj₂ x) == (proj₂ y)) →
+                x == y
+idTypePairs⁻¹ (p , q) = {!!}

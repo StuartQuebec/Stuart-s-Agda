@@ -62,15 +62,18 @@ id {A} = (λ x → x)
 
 -- todo : recursor
 
-data ∑ {m} (A : Type m) {n} (B : (A → Type n)) : Type (m ⊔ n) where
- _,_ : (a : A) → B a → ∑ A B
+data ∑ {m n} (A : Type m) (B : (A → Type n)) : Type (m ⊔ n) where
+ _,_  : (a : A) → B a → ∑ A B
+
+--rec∑ : ∀ {m n o} {A : Type m} {B : (A → Type n)} {C : Type o} → 
+--         (f : (a : A) → B a) → (∑ A B) → C
+--rec∑ f (a , b) = (f a) b
 
 proj₁ : ∀ {m} {A : Type m} {n} {B : (A → Type n)} → ∑ A B → A
 proj₁ (a , b) = a
 
 proj₂ : ∀ {m} {A : Type m} {n} {B : (A → Type n)} →
       (x : ∑ A B) → B (proj₁ x)
-
 proj₂ (a , b) = b 
 
 
@@ -78,15 +81,11 @@ proj₂ (a , b) = b
 
 _×_ : ∀ {m n} (A : Type m) (B : Type n) → Type (m ⊔ n)
 A × B = ∑ A (λ _ → B)
-{-
-proj₁ : ∀ {m} {A : Type m} {n} {B : Type n} → A × B → A
-proj₁ (a , b) = a
 
-proj₂ : ∀ {m} {A : Type m} {n} {B : Type n} →
-      (x : A × B) → B
+rec× : ∀ {m n o} {A : Type m} {B : Type n} {C : Type o} →
+       (f : A → B → C) → ((A × B) → C)
+rec× f (a , b) = (f a) b
 
-proj₂ (a , b) = b 
--}
 ----------------------------------
 ------- Natural Numbers ----------
 ----------------------------------
@@ -116,3 +115,5 @@ suc m + n = suc (m + n)
 _*_ : ℕ → ℕ → ℕ
 zero * n = zero
 suc m * n = m + (m * n)
+
+{-# BUILTIN NATURAL ℕ #-}

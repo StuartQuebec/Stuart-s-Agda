@@ -21,14 +21,14 @@ idEq = pathInd (_ == _) (λ x → refl)
 
 ap : ∀ {m n} {A : Type m} {B : Type n} → (f : A → B) →
      {x y : A} → (x == y) → ((f x) == (f y))
-ap f {x} {y} = pathInd (λ {x} {y} {p} → ((f x) == (f y))) (λ a → refl)
+ap f = pathInd (λ {x} {y} {p} → ((f x) == (f y))) (λ a → refl)
 
 sym : ∀ {m} {A : Type m} {x y : A} → x == y → y == x
-sym = pathInd (λ {x} {y} {p : x == y} → y == x) (λ a → refl)
+sym = pathInd (λ {x} {y} → y == x) (λ a → refl)
 
 trans : forall {m} {A : Type m} {x y z : A} → x == y → y == z → x == z
-trans {m} {A} {x} {y} {z} = pathInd (λ {x} {y} {p : x == y}
-              → y == z → x == z) (λ x → id)
+trans {m} {A} {x} {y} {z} = pathInd (λ {x} {y} → y == z → x == z)
+                            (λ x → id)
 
 _◾_ : forall {m} {A : Type m} {x y z : A} → x == y → y == z → x == z
 p ◾ q = trans p q
@@ -61,7 +61,7 @@ ass {m} {A} {w} {x} {y} {z} = pathInd (λ {w} {x} {p : w == x} →
 
 trp : ∀ {m n} {A : Type m} {x y : A} → (P : A → Type n) → x == y →
       P x → P y
-trp {m} {n} {A} {x} {y} P = pathInd (λ {x} {y} {p} → P x → P y)
+trp {m} {n} {A} {x} {y} P = pathInd (λ {x} {y} → P x → P y)
                                     (λ a → id)
 
 -- functor propety of dependent functions
@@ -113,24 +113,46 @@ homNatTrafo f g H = pathInd (λ {x} {y} {p : x == y}
          H (f x) == ap f (H x)
 $2,4,4 f H {x} = {!!}-}
 
-quinv : ∀ {m n} {A : Type m} {B : Type n} → (f : A → B) → Type (m ⊔ n)
-quinv {m} {n} {A} {B} f = (g : B → A) → (α : (f ° g) ~ id) → 
-                          (β : (g ° f) ~ id) 
-                          → (B → A) × (( (f ° g) ~ id) × ((g ° f) ~ id) )
+quinv : ∀ {m n} {A : Type m} {B : Type n} → (f : A → B) →
+        (g : B → A) → Type (m ⊔ n)
+quinv {m} {n} {A} {B} f g = (( (g ° f) ~ id) × ((f ° g) ~ id) )
 
--- Identity type on pairs
+-- Characterization of the identity type on simple pairs
 
 idTypePairs : ∀ {m n} {A : Type m} {B : Type n} {x y : A × B} →
               (p : x == y) →
               ((proj₁ x) == (proj₁ y)) × ((proj₂ x) == (proj₂ y))
 idTypePairs p = (ap proj₁ p) , (ap proj₂ p)
 
-help : ∀ {m n} {A : Type m} {B : Type n} {x y : A × B} →
-       ((proj₁ x) == (proj₁ y)) → ((proj₂ x) == (proj₂ y)) →  x == y
-help {m} {n} {A} {B} = pathInd (λ {x} {y} {p} →
-                       ((proj₂ x) == (proj₂ y)) →  x == y) ? 
-
 idTypePairs⁻¹ : ∀ {m n} {A : Type m} {B : Type n} {x y : A × B} →
                 ((proj₁ x) == (proj₁ y)) × ((proj₂ x) == (proj₂ y)) →
                 x == y
-idTypePairs⁻¹ (p , q) = {!!}
+idTypePairs⁻¹ {m} {n} {A} {B} {a , b} {a' , b'} = rec×
+                  (pathInd (λ {x} {y} → b == b' → (x , b) == (y , b'))
+                  (λ a → pathInd (λ {x} {y} → (a , x) == (a , y))
+                         (λ b → refl)))
+
+$2,6,2i : ∀ {m} {A : Type m} → quinv (id {m} {A}) id
+$2,6,2i {m} {A} = (λ x → refl {m} {A}) , (λ x → refl)
+
+$2,6,2ii : ∀ {m} {A : Type m} → {x y : A} →  quinv (id {m} {x == y}) id
+$2,6,2ii {m} {A} = pathInd (λ {x} {y} {p} → p == p)
+                           (λ x → refl) , 
+                   pathInd (λ {x} {y} {p} → p == p)
+                           (λ x → refl)
+
+help : ∀ {m n} {A : Type m} {B : Type n} (x : A × B)
+       → ((idTypePairs⁻¹ {m} {n} {A} {B} {x} {x}) ° (idTypePairs {m} {n} {A} {B} {x} {x}))
+         refl == refl
+help (a , b) = refl
+
+help' : ∀ {m n} {A : Type m} {B : Type n} {x y : A × B} → (pq : ((proj₁ x) == (proj₁ y)) × ((proj₂ x) == (proj₂ y))) →
+      (((idTypePairs {m} {n} {A} {B} {x} {y}) ° idTypePairs⁻¹) pq) == pq
+help' = {!!}
+      
+
+$2,6,2 : ∀ {m n} {A : Type m} {B : Type n} {x y : A × B} → quinv 
+         (idTypePairs {m} {n} {A} {B} {x} {x}) idTypePairs⁻¹
+$2,6,2 = pathInd (λ {x} {y} {p} → (idTypePairs⁻¹ ° idTypePairs) p == p) 
+                 (λ x → help x ) ,
+         {!    !}

@@ -15,6 +15,9 @@ pathInd : ∀ {m n} {A : Set m} →
           {x y : A} (p : x == y) → C {x} {y} {p}
 pathInd C c {x} refl = c x
 
+foo : (x : ℕ × ℕ) →  ℕ
+foo = rec× (λ m n → m + n)
+
 -- todo : Proof that idEq is actually the identity
 idEq : {A : Set} {x y : A} → x == y → x == y
 idEq = pathInd (_ == _) (λ x → refl)
@@ -146,13 +149,24 @@ help : ∀ {m n} {A : Type m} {B : Type n} (x : A × B)
          refl == refl
 help (a , b) = refl
 
-help' : ∀ {m n} {A : Type m} {B : Type n} {x y : A × B} → (pq : ((proj₁ x) == (proj₁ y)) × ((proj₂ x) == (proj₂ y))) →
-      (((idTypePairs {m} {n} {A} {B} {x} {y}) ° idTypePairs⁻¹) pq) == pq
-help' = {!!}
+
+help' : ∀ {m n} {A : Type m} {B : Type n} {a : A} {a' : A} → (p : a == a') →
+        {b : B} → {b' : B} → (q : b == b') →
+        (((idTypePairs {m} {n} {A} {B} {a , b} {a' , b'}) ° idTypePairs⁻¹) (p , q) == (p , q))
+
+help' {m} {n} {A} {B} = pathInd (λ {a} {a'} {p} → {b : B} → {b' : B} → (q : b == b') →
+                                                   (((idTypePairs {m} {n} {A} {B} {a , b} {a' , b'}) ° idTypePairs⁻¹) (p , q)) == (p , q) )
+                                 (λ a → (pathInd (λ {b} {b'} {q} → 
+                                                 (((idTypePairs {m} {n} {A} {B} {a , b} {a , b'}) ° idTypePairs⁻¹) (refl , q)) == (refl , q))
+                                                  (λ x' → refl)))
+                             
+help'' : ∀ {m n} {A : Type m} {B : Type n} {a : A} {b : B} {a' : A} {b' : B}
+        → (p : (a == a')) → (q : (b == b')) → ℕ
+help'' = {!pathInd (λ {x} {y} → !}
       
 
 $2,6,2 : ∀ {m n} {A : Type m} {B : Type n} {x y : A × B} → quinv 
          (idTypePairs {m} {n} {A} {B} {x} {x}) idTypePairs⁻¹
 $2,6,2 = pathInd (λ {x} {y} {p} → (idTypePairs⁻¹ ° idTypePairs) p == p) 
                  (λ x → help x ) ,
-         {!    !}
+         {!?!}

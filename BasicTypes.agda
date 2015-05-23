@@ -17,12 +17,21 @@ postulate
 {-# BUILTIN LEVELSUC  lsuc  #-}
 {-# BUILTIN LEVELMAX  _⊔_   #-}
 
+data ℕ : Set where
+ zero : ℕ
+ suc : ℕ → ℕ
+
+{-# BUILTIN NATURAL ℕ #-}
+
 Type : (n : Level) → Set (lsuc n)
 Type n = Set n
+
 
 Type₀ = Set0
 Type₁ = Set1
 
+
+Typ = Type₀
 --------- Maybe Type----------------------
 
 data Maybe {ℓ} (A : Type ℓ) : Type ℓ where
@@ -84,15 +93,15 @@ A × B = ∑ A (λ _ → B)
 
 rec× : ∀ {m n o} {A : Type m} {B : Type n} {C : Type o} →
        (f : A → B → C) → ((A × B) → C)
-rec× f (a , b) = (f a) b
+rec× f (a , b) = f a b
+
+ind× : ∀ {m n} {A : Type m} {B : Type n} {C : A × B → Type (m ⊔ n)} →
+       (f : (a : A) → (b : B) → C (a , b)) → ((x : A × B) → (C x))
+ind× f (a , b) = f a b
 
 ----------------------------------
 ------- Natural Numbers ----------
 ----------------------------------
-
-data ℕ : Type₀ where
- zero : ℕ
- suc : ℕ → ℕ
 
 
 constℕ : ∀ {m} {A : Type m} → A → Type₀
@@ -116,4 +125,4 @@ _*_ : ℕ → ℕ → ℕ
 zero * n = zero
 suc m * n = m + (m * n)
 
-{-# BUILTIN NATURAL ℕ #-}
+

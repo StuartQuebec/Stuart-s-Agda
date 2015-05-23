@@ -165,11 +165,11 @@ help'' : ∀ {m n} {A : Type m} {B : Type n} → (x : A × B) → (a' : A) → (
          (q : proj₂ x == b') → (((idTypePairs {m} {n} {A} {B} {x} {a' , b'}) ° idTypePairs⁻¹) (p , q) == (p , q))
 help'' = (ind× help')
 
-help'''' : ∀ {m n} {A : Type m} {B : Type n} → (a : A) → (b : B) → (y : A × B) → (p : proj₁ y == a) →
-         (q : proj₂ y == b) → (((idTypePairs {m} {n} {A} {B} {a , b} {y}) ° idTypePairs⁻¹) (p , q) == (p , q))
-help'''' {m} {n} {A} {B} a b y = help'' (a , b) (proj₁ y)  (proj₂ y)
+help'''' : ∀ {m n} {A : Type m} {B : Type n} → (a' : A) → (b' : B) → (x : A × B) → (p : proj₁ x == a') →
+         (q : proj₂ x == b') → (((idTypePairs {m} {n} {A} {B} {x} {a' , b'}) ° idTypePairs⁻¹) (p , q) == (p , q))
+help'''' {m} {n} {A} {B} a b y = help'' y a b
 
-help''' : ∀ {m n} {A : Type m} {B : Type n} (x y : A × B) → (p : proj₁ x == proj₁ y) →
+help''' : ∀ {m n} {A : Type m} {B : Type n} → (y : A × B) → (x : A × B) → (p : proj₁ x == proj₁ y) →
          (q : proj₂ x == proj₂ y) → (((idTypePairs {m} {n} {A} {B} {x} {y}) ° idTypePairs⁻¹) (p , q) == (p , q))
 help'''  = (ind× help'''')
                             

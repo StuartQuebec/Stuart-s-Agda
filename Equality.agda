@@ -150,21 +150,24 @@ help : ∀ {m n} {A : Type m} {B : Type n} (x : A × B)
 help (a , b) = refl
 
 
-help' : ∀ {m n} {A : Type m} {B : Type n} {a : A} {a' : A} → (p : a == a') →
-        {b : B} → {b' : B} → (q : b == b') →
+help' : ∀ {m n} {A : Type m} {B : Type n} {a : A}  {b : B} {a' : A} {b' : B} → (p : a == a') →
+         (q : b == b') →
         (((idTypePairs {m} {n} {A} {B} {a , b} {a' , b'}) ° idTypePairs⁻¹) (p , q) == (p , q))
 
-help' {m} {n} {A} {B} = pathInd (λ {a} {a'} {p} → {b : B} → {b' : B} → (q : b == b') →
+help' {m} {n} {A} {B} {a} {b} {a'} {b'} = pathInd (λ {a} {a'} {p} → (q : b == b') →
                                                    (((idTypePairs {m} {n} {A} {B} {a , b} {a' , b'}) ° idTypePairs⁻¹) (p , q)) == (p , q) )
                                  (λ a → (pathInd (λ {b} {b'} {q} → 
                                                  (((idTypePairs {m} {n} {A} {B} {a , b} {a , b'}) ° idTypePairs⁻¹) (refl , q)) == (refl , q))
                                                   (λ x' → refl)))
                              
 
-      
+{-help'' : ∀ {m n} {A : Type m} {B : Type n} {x y : A × B} → (p : proj₁ x == proj₁ y) →
+          (q : proj₂ x == proj₂ y) →
+        (((idTypePairs {m} {n} {A} {B} {x} {y}) ° idTypePairs⁻¹) (p , q) == (p , q))
+-}
 
 $2,6,2 : ∀ {m n} {A : Type m} {B : Type n} {x y : A × B} → quinv 
-         (idTypePairs {m} {n} {A} {B} {x} {x}) idTypePairs⁻¹
+         (idTypePairs {m} {n} {A} {B} {x} {y}) idTypePairs⁻¹
 $2,6,2 = pathInd (λ {x} {y} {p} → (idTypePairs⁻¹ ° idTypePairs) p == p) 
                  (λ x → help x ) ,
-         {!?!}
+         {!!}

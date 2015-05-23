@@ -149,7 +149,7 @@ help : ∀ {m n} {A : Type m} {B : Type n} (x : A × B)
          refl == refl
 help (a , b) = refl
 
-
+{-
 
 help' : ∀ {m n} {A : Type m} {B : Type n} (a : A)  (b : B) (a' : A) (b' : B) → (p : a == a') →
          (q : b == b') →
@@ -160,27 +160,38 @@ help' {m} {n} {A} {B} a b a' b' = pathInd (λ {a} {a'} {p} → (q : b == b') →
                                  (λ a → (pathInd (λ {b} {b'} {q} → 
                                                  (((idTypePairs {m} {n} {A} {B} {a , b} {a , b'}) ° idTypePairs⁻¹) (refl , q)) == (refl , q))
                                                   (λ x' → refl)))
+-}
+help' :  ∀ {m n} {A : Type m} {B : Type n} (a : A)  (b : B) (a' : A) (b' : B) → (pq : (a == a') ×
+         (b == b')) →
+        (((idTypePairs {m} {n} {A} {B} {a , b} {a' , b'}) ° idTypePairs⁻¹) pq) == pq
 
-help'' : ∀ {m n} {A : Type m} {B : Type n} → (x : A × B) → (a' : A) → (b' : B) → (p : proj₁ x == a') →
-         (q : proj₂ x == b') → (((idTypePairs {m} {n} {A} {B} {x} {a' , b'}) ° idTypePairs⁻¹) (p , q) == (p , q))
+help' {m} {n} {A} {B} a b a' b' = ind× (pathInd (λ {a} {a'} {p} → (q : b == b') →
+                                                   (((idTypePairs {m} {n} {A} {B} {a , b} {a' , b'}) ° idTypePairs⁻¹) (p , q)) == (p , q) )
+                                 (λ a → (pathInd (λ {b} {b'} {q} → 
+                                                 (((idTypePairs {m} {n} {A} {B} {a , b} {a , b'}) ° idTypePairs⁻¹) (refl , q)) == (refl , q))
+                                                  (λ x' → refl))))
+
+
+help'' : ∀ {m n} {A : Type m} {B : Type n} → (x : A × B) → (a' : A) → (b' : B) → (pq : (proj₁ x == a') ×
+         (proj₂ x == b')) → (((idTypePairs {m} {n} {A} {B} {x} {a' , b'}) ° idTypePairs⁻¹) (pq) == (pq))
 help'' = (ind× help')
 
-help'''' : ∀ {m n} {A : Type m} {B : Type n} → (a' : A) → (b' : B) → (x : A × B) → (p : proj₁ x == a') →
-         (q : proj₂ x == b') → (((idTypePairs {m} {n} {A} {B} {x} {a' , b'}) ° idTypePairs⁻¹) (p , q) == (p , q))
-help'''' {m} {n} {A} {B} a b y = help'' y a b
+help''' : ∀ {m n} {A : Type m} {B : Type n} → (a' : A) → (b' : B) → (x : A × B) → (pq : (proj₁ x == a') ×
+         (proj₂ x == b')) → (((idTypePairs {m} {n} {A} {B} {x} {a' , b'}) ° idTypePairs⁻¹) (pq) == (pq))
+help''' {m} {n} {A} {B} a b y = help'' y a b
 
-help''' : ∀ {m n} {A : Type m} {B : Type n} → (y : A × B) → (x : A × B) → (p : proj₁ x == proj₁ y) →
-         (q : proj₂ x == proj₂ y) → (((idTypePairs {m} {n} {A} {B} {x} {y}) ° idTypePairs⁻¹) (p , q) == (p , q))
-help'''  = (ind× help'''')
-                            
+help'''' : ∀ {m n} {A : Type m} {B : Type n} → (y : A × B) → (x : A × B) → (pq : (proj₁ x == proj₁ y) ×
+         (proj₂ x == proj₂ y)) → (((idTypePairs {m} {n} {A} {B} {x} {y}) ° idTypePairs⁻¹) (pq) == (pq))
+help''''  = (ind× help''')
 
-{-help'' : ∀ {m n} {A : Type m} {B : Type n} {x y : A × B} → (p : proj₁ x == proj₁ y) →
-          (q : proj₂ x == proj₂ y) →
-        (((idTypePairs {m} {n} {A} {B} {x} {y}) ° idTypePairs⁻¹) (p , q) == (p , q))
--}
+help''''' : ∀ {m n} {A : Type m} {B : Type n} → {x y : A × B} → (pq : (proj₁ x == proj₁ y) ×
+         (proj₂ x == proj₂ y)) → (((idTypePairs {m} {n} {A} {B} {x} {y}) ° idTypePairs⁻¹) (pq) == (pq))
+help''''' {m} {n} {A} {B} {x} {y} = help'''' {m} {n} {A} {B} y x
+
 
 $2,6,2 : ∀ {m n} {A : Type m} {B : Type n} {x y : A × B} → quinv 
          (idTypePairs {m} {n} {A} {B} {x} {y}) idTypePairs⁻¹
-$2,6,2 = pathInd (λ {x} {y} {p} → (idTypePairs⁻¹ ° idTypePairs) p == p) 
+$2,6,2 {m} {n} {A} {B} {x} {y} = pathInd (λ {x} {y} {p} → (idTypePairs⁻¹ ° idTypePairs) p == p) 
                  (λ x → help x ) ,
-         {!!}
+         (help''''' {m} {n} {A} {B} {x} {y})
+

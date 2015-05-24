@@ -65,6 +65,14 @@ const x = λ _ → x
 id : ∀ {ℓ} {A : Type ℓ} → A → A
 id {A} = (λ x → x)
 
+flipDouble : ∀ {m n o p} {A : Type m} {B : Type n} {C : Type o} {D : Type p} →
+       (f : A → B → C → D) → B → C → A → D
+flipDouble f b c a = f a b c
+
+asdf : ∀ {l m n} {A : Type l} {B : Type m} {C : Type n} →
+        (f : A → B) → A → (g : B → C) → C
+asdf = flipDouble _°_
+
 ----------------------------------
 -----(Dependent) Pair Types---------
 ----------------------------------

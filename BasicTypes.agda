@@ -22,6 +22,8 @@ data ℕ : Set where
  suc : ℕ → ℕ
 
 {-# BUILTIN NATURAL ℕ #-}
+{-# BUILTIN ZERO zero #-}
+{-# BUILTIN SUC suc #-}
 
 Type : (n : Level) → Set (lsuc n)
 Type n = Set n
@@ -125,7 +127,7 @@ pred (suc n) = just n
 
 _+_ : ℕ → ℕ → ℕ
 zero + n = n                               
-suc m + n = suc (m + n)                   
+suc m + n = suc (m + n)                    
 
 -- Multiplication
 

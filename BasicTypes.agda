@@ -109,6 +109,15 @@ ind× : ∀ {m n} {A : Type m} {B : Type n} {C : A × B → Type (m ⊔ n)} →
        (f : (a : A) → (b : B) → C (a , b)) → ((x : A × B) → (C x))
 ind× f (a , b) = f a b
 
+
+-- Two inductions on A × B in one step:
+
+
+2ind× : ∀ {k l m} {A : Type k} {B : Type l} {C : A × B → A × B → Type m} →
+        (f : (a : A) → (b : B) → (a' : A) → (b' : B) → C (a , b) (a' , b'))
+        → (x : A × B) → (y : A × B) → C x y
+2ind× f (a , b) (a' , b') = f a b a' b'
+
 ----------------------------------
 ------- Natural Numbers ----------
 ----------------------------------

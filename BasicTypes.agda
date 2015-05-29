@@ -76,9 +76,13 @@ id {A} = (λ x → x)
 data ∑ {m n} (A : Type m) (B : (A → Type n)) : Type (m ⊔ n) where
  _,_  : (a : A) → B a → ∑ A B
 
---rec∑ : ∀ {m n o} {A : Type m} {B : (A → Type n)} {C : Type o} → 
---         (f : (a : A) → B a) → (∑ A B) → C
---rec∑ f (a , b) = (f a) b
+rec∑ : ∀ {m n o} {A : Type m} {B : (A → Type n)} {C : Type o} → 
+         (f : (a : A) → B a → C) → ∑ A B → C
+rec∑ f (a , b) = f a b
+
+ind∑ : ∀ {m n} {A : Type m} {B : (A → Type n)} {C : ∑ A B → Type (m ⊔ n)} →
+         (f : (a : A) → (b : B a) → C (a , b)) → (x : ∑ A B) → C x
+ind∑ f (a , b) = f a b
 
 proj₁ : ∀ {m} {A : Type m} {n} {B : (A → Type n)} → ∑ A B → A
 proj₁ (a , b) = a
@@ -104,6 +108,10 @@ ind× f (a , b) = f a b
 
 -- Two inductions on A × B in one step:
 
+2ind∑ : ∀ {k l m} {A : Type k} {B : (A → Type l)} {C : ∑ A B → ∑ A B → Type m} →
+        (f : (a : A) → (b : B a) → (a' : A) → (b' : B a') → C (a , b) (a' , b')) →
+        (x y : ∑ A B) → C x y
+2ind∑ f (a , b) (a' , b') = f a b a' b'
 
 2ind× : ∀ {k l m} {A : Type k} {B : Type l} {C : A × B → A × B → Type m} →
         (f : (a : A) → (b : B) → (a' : A) → (b' : B) → C (a , b) (a' , b'))

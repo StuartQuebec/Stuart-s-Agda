@@ -115,10 +115,14 @@ homNatTrafo f g H = pathInd (λ {x} {y} {p : x == y}
 isEquiv : ∀ {m n} {A : Type m} {B : Type n} → (f : A → B) → Type (m ⊔ n)
 isEquiv {m} {n} {A} {B} f = ∑ (B → A) (λ g → (g ° f) ~ id) × (∑ (B → A) (λ g → (f ° g) ~ id))
 
-typeEquiv : ∀ {m n} {A : Type m} {B : Type n} → Type (m ⊔ n)
-typeEquiv {m} {n} {A} {B} = ∑ (A → B) (λ f → isEquiv f)
-≃ : ∀ {m n} {A : Type m} {B : Type n} → Type (m ⊔ n)
-≃ = typeEquiv
+infixl 50 _≃_
+
+typeEquiv : ∀ {m n} (A : Type m) (B : Type n) → Type (m ⊔ n)
+typeEquiv {m} {n} A B = ∑ (A → B) (λ f → isEquiv f)
+_≃_ : ∀ {m n} (A : Type m) (B : Type n) → Type (m ⊔ n)
+A ≃ B = typeEquiv A B
+
+
 
 -- Characterization of the identity type on simple pairs
 
@@ -185,10 +189,22 @@ $2,6,5 {k} {l} {m} {n} {A} {B} {A'} {B'} {f} {g} = 2ind× (λ a b a' b' →
                      (idTypePairs⁻¹ {k} {l} {A} {B} {a , b} {a , b'} (refl , q)) == idTypePairs⁻¹ ((ap f refl) , (ap g q)))
                 (λ b → refl)))
 
-
-
 -- Characterization Identity Type Dependent Pairs
 
+idTypeDepPairs : ∀ {m n} {A : Type m} {P : A → Type n} {w w' : ∑ A P} → w == w' →
+                 ∑ ((proj₁ w) == (proj₁ w')) (λ p → (trp P p (proj₂ w) == (proj₂ w')))
+idTypeDepPairs {m} {n} {A} {P} {w} {w'} =  pathInd (λ {w} {w'} → ∑ ((proj₁ w) == (proj₁ w')) (λ p → (trp P p (proj₂ w) == (proj₂ w')))) 
+                                  (λ w → refl , refl)  
 
+helpp : ∀ {m n} {A : Type m} {P : A → Type n} {a : A} {b : (P a)} {a' : A} {b' : (P a)} → (p : a == a') → (b == b') → 
+        (a , b) == (a' , b')
+helpp = {!!}
 
---$2,7,2 : ∀ {m n} {A : Type m} {P : A → Type n}  
+idTypeDepPairs⁻¹ : ∀ {m n} {A : Type m} {P : A → Type n} (w w' : ∑ A P) → 
+                   ∑ ((proj₁ w) == (proj₁ w')) (λ p → (trp P p (proj₂ w) == (proj₂ w'))) → w == w'
+idTypeDepPairs⁻¹ {m} {n} {A} {P} = 2ind∑ (λ w₁ w₂ w₁' w₂' → {!ind∑ helpp!})
+                                                                --    (w₁ , w₂) == (w₁' , w₂')) ?!})
+
+$2,7,2 : ∀ {m n} {A : Type m} {P : A → Type n} {w w' : ∑ A P} →
+         (w == w') ≃ (∑ (proj₁ w == proj₁ w') (λ p → trp P p (proj₂ w) == proj₂ w'))
+$2,7,2 = idTypeDepPairs , {!!}
